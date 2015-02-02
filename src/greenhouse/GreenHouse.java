@@ -8,6 +8,7 @@ package greenhouse;
 import greenhouse.sensors.Sensor;
 import greenhouse.sensors.Sensors;
 import greenhouse.status.SimpleReader;
+import greenhouse.status.remote.BasicGoogleSpreadsheetPoster;
 import java.util.Set;
 import java.util.Timer;
 import java.util.logging.Logger;
@@ -24,8 +25,8 @@ public class GreenHouse {
     private static final long READING_INTERVAL = 1000l;
     private static final long LOGGING_DELAY = 2500l;
     private static final long LOGGING_INTERVAL = 1000l;
-
-
+    private static final long GOOGLE_LOGGING_DELAY = 2600l;
+    private static final long GOOGLE_LOGGING_INTERVAL = 30 * 1000l;
 
     /**
      * @param args the command line arguments
@@ -40,6 +41,7 @@ public class GreenHouse {
         
         timer.schedule(sensorsReader, READING_DELAY, READING_INTERVAL);
         timer.schedule(new greenhouse.status.Logger(sensorsReader), LOGGING_DELAY, LOGGING_INTERVAL);
+        timer.schedule(new BasicGoogleSpreadsheetPoster(sensorsReader), GOOGLE_LOGGING_DELAY, GOOGLE_LOGGING_INTERVAL);
     }
 
 }

@@ -18,7 +18,7 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class BasicGoogleSpreadsheetPoster extends TimerTask {
 
-    private String url = "TODO: insert URL here";
+    private String url = "";
     private static final Logger LOG = Logger.getLogger(BasicGoogleSpreadsheetPoster.class.getName());
 
     private final Reader sensorsReader;
@@ -27,15 +27,45 @@ public class BasicGoogleSpreadsheetPoster extends TimerTask {
         this.sensorsReader = sensorsReader;
     }
 
-    private int post(Measurement measurement) throws Exception {
-
+    private int sendPostRequest(String data) throws Exception {
         URL endpoint = new URL(url);
         HttpsURLConnection connection = (HttpsURLConnection) endpoint.openConnection();
 
-        sendRequest(connection, measurement);
-
+        //TODO: params as json? set req type etc!
+        LOG.log(Level.FINE, "Sending POST request to URL: {0}", url);
+        LOG.log(Level.FINER, "Post parameters: {0}", data);
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+            wr.writeBytes(data);
+            wr.flush();
+        }
         int responseCode = connection.getResponseCode();
 
+        StringBuffer response = readResponse(connection);
+        LOG.log(Level.FINE, "Response Code: {0}", responseCode);
+        LOG.finer(response.toString());
+        connection.disconnect();
+        return responseCode;
+    }
+
+    private int sendGetRequest(String data) throws ProtocolException, IOException {
+        URL endpoint = new URL(url + "?" + data);
+        HttpsURLConnection connection = (HttpsURLConnection) endpoint.openConnection();
+
+        LOG.log(Level.FINE, "Sending GET request to URL: {0}", url);
+        LOG.log(Level.FINER, "Post parameters: {0}", data);
+        connection.setRequestMethod("GET");
+        int responseCode = connection.getResponseCode();
+
+        StringBuffer response = readResponse(connection);
+        LOG.log(Level.FINE, "Response Code: {0}", responseCode);
+        LOG.finer(response.toString());
+        connection.disconnect();
+        return responseCode;
+    }
+
+    private StringBuffer readResponse(HttpsURLConnection connection) throws IOException {
         StringBuffer response;
         try (BufferedReader in = new BufferedReader(
                 new InputStreamReader(connection.getInputStream()))) {
@@ -45,31 +75,14 @@ public class BasicGoogleSpreadsheetPoster extends TimerTask {
                 response.append(inputLine);
             }
         }
-
-        LOG.log(Level.FINE, "Response Code: {0}", responseCode);
-        LOG.finer(response.toString());
-
-        return responseCode;
-    }
-
-    private void sendRequest(HttpsURLConnection connection, Measurement measurement) throws ProtocolException, IOException {
-        //TODO: params!
-        String urlParameters = "some=stuff&here=please";
-        LOG.log(Level.FINE, "Sending POST request to URL: {0}", url);
-        LOG.log(Level.FINER, "Post parameters: {0}", urlParameters);
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-            wr.writeBytes(urlParameters);
-            wr.flush();
-        }
+        return response;
     }
 
     @Override
     public void run() {
         sensorsReader.getLastMeasurement().stream().forEach((measurement) -> {
             try {
-                post(measurement);
+                sendGetRequest(getData(measurement));
             } catch (Exception ex) {
                 Logger.getLogger(BasicGoogleSpreadsheetPoster.class.getName()).log(Level.SEVERE, "Cannot post measurement.", ex);
             }
@@ -82,5 +95,9 @@ public class BasicGoogleSpreadsheetPoster extends TimerTask {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    private String getData(Measurement measurement) {
+        return "datetime=test&temp1=100";
     }
 }
