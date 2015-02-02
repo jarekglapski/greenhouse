@@ -11,7 +11,6 @@ import greenhouse.sensors.Sensor;
 /**
  * DS18B20 type temperature sensor.
  *
- *
  */
 public class DallasSensorDS18B20 implements Sensor {
 

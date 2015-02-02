@@ -7,6 +7,8 @@ import java.util.TimerTask;
  */
 public class Logger extends TimerTask {
 
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(Logger.class.getName());
+
     private final Reader sensorsReader;
 
     public Logger(Reader sensorsReader) {
@@ -16,7 +18,7 @@ public class Logger extends TimerTask {
     @Override
     public void run() {
         sensorsReader.getLastMeasurement().stream().forEach((measurement) -> {
-            java.util.logging.Logger.getLogger(this.getClass().getName()).info(measurement.toString());
+            LOG.info(measurement.toString());
         });
     }
 }
