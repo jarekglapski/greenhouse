@@ -37,11 +37,11 @@ public class GreenHouse {
 
         Timer timer = new Timer();
         
-        //SimpleReader sensorsReader = new SimpleReader(sensors);
+        SimpleReader sensorsReader = new SimpleReader(sensors);
         
-        //timer.schedule(sensorsReader, READING_DELAY, READING_INTERVAL);
-        //timer.schedule(new greenhouse.status.Logger(sensorsReader), LOGGING_DELAY, LOGGING_INTERVAL);
-        timer.schedule(new BasicGoogleSpreadsheetPoster(null), GOOGLE_LOGGING_DELAY, GOOGLE_LOGGING_INTERVAL);
+        timer.schedule(sensorsReader, READING_DELAY, READING_INTERVAL);
+        timer.schedule(new greenhouse.status.Logger(sensorsReader), LOGGING_DELAY, LOGGING_INTERVAL);
+        //timer.schedule(new BasicGoogleSpreadsheetPoster(null), GOOGLE_LOGGING_DELAY, GOOGLE_LOGGING_INTERVAL);
     }
 
 }

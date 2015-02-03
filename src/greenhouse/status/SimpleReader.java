@@ -25,9 +25,9 @@ public class SimpleReader extends TimerTask implements Reader {
     }
 
     @Override
-    public void run() {
-        writeLock.lock();
+    public void run() {        
         try {
+            writeLock.lock();
             lastMeasurement.clear();
             for (Sensor sensor : sensors) {
                 store(Reader.getMeasurement(sensor));
@@ -37,9 +37,9 @@ public class SimpleReader extends TimerTask implements Reader {
         }
     }
 
-    protected void store(Measurement measurement) {
-        writeLock.lock();
+    protected void store(Measurement measurement) { 
         try {
+            writeLock.lock();
             lastMeasurement.add(measurement);
         } finally {
             writeLock.unlock();
@@ -48,8 +48,8 @@ public class SimpleReader extends TimerTask implements Reader {
 
     @Override
     public Set<Measurement> getLastMeasurement() {
-        readLock.lock();
         try {
+            readLock.lock();
             return lastMeasurement;
         } finally {
             readLock.unlock();
