@@ -15,7 +15,7 @@ import greenhouse.sensors.Sensor;
 public class DallasSensorDS18B20 implements Sensor {
 
     private static final String VALUE_FILE_NAME = "w1_slave";
-    private static final String CELC_DEG_STRING = "\u00B0C";
+    private static final String CELC_DEG_STRING = "*C";
     private static final String TEMP_VALUE_PREFIX = "t=";
 
     private final File sensorFile;

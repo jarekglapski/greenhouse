@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 public class DHTSensor {
 
     private static final Logger LOG = Logger.getLogger(DHTSensor.class.getName());
-    private static final String ADAFRUIT_PROCESS_TEMPLATE = "AdafruitDHT %s %d";
-    private final static String TEMP_STR = "Temp =";
-    private final static String HUM_STR = "Hum =";
+    private static final String ADAFRUIT_PROCESS_TEMPLATE = "sudo AdafruitDHT %s %d";
+    private final static String TEMP_STR = "Temp=";
+    private final static String HUM_STR = "Humidity=";
     private final int gpioPin;
     private final DHTType type;
     private String lastValue;
