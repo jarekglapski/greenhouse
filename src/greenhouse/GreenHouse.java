@@ -9,8 +9,11 @@ import greenhouse.sensors.Sensor;
 import greenhouse.sensors.Sensors;
 import greenhouse.status.SimpleReader;
 import greenhouse.status.remote.BasicGoogleSpreadsheetPoster;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 import java.util.Timer;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -20,13 +23,24 @@ import java.util.logging.Logger;
 public class GreenHouse {
 
     private static final Logger LOG = Logger.getLogger(GreenHouse.class.getName());
-    
+
     private static final long READING_DELAY = 1000l;
     private static final long READING_INTERVAL = 1000l;
     private static final long LOGGING_DELAY = 2500l;
     private static final long LOGGING_INTERVAL = 1000l;
     private static final long GOOGLE_LOGGING_DELAY = 2600l;
     private static final long GOOGLE_LOGGING_INTERVAL = 30 * 1000l;
+
+    static {
+        final InputStream inputStream = GreenHouse.class.getResourceAsStream("/logging.properties");
+
+        try {
+            LogManager.getLogManager().readConfiguration(inputStream);
+        } catch (final IOException e) {
+            Logger.getAnonymousLogger().severe("Could not load default logging.properties file");
+            Logger.getAnonymousLogger().severe(e.getMessage());
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -36,9 +50,9 @@ public class GreenHouse {
         LOG.info(String.format("%d sensors found", sensors.size()));
 
         Timer timer = new Timer();
-        
+
         SimpleReader sensorsReader = new SimpleReader(sensors);
-        
+
         timer.schedule(sensorsReader, READING_DELAY, READING_INTERVAL);
         timer.schedule(new greenhouse.status.Logger(sensorsReader), LOGGING_DELAY, LOGGING_INTERVAL);
         //timer.schedule(new BasicGoogleSpreadsheetPoster(null), GOOGLE_LOGGING_DELAY, GOOGLE_LOGGING_INTERVAL);

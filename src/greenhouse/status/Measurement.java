@@ -64,6 +64,6 @@ public class Measurement {
     
     @Override
     public String toString() {
-        return String.format("%s(%s):%3.2f%s", getPhysicalQuantity(), getSensorId(), getValue(), getUnit());
+        return String.format("%s(%s) | %3.2f%s", getPhysicalQuantity(), getSensorId(), getValue(), getUnit());
     }
 }
