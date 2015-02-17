@@ -34,14 +34,14 @@ public class MongoLogger extends TimerTask {
             DB db = mongoClient.getDB(DB_NAME);
             DBCollection measurements = db.getCollection(COLLECTION_NAME);
             sensorsReader.getLastMeasurement().stream().forEach((measurement) -> {
-                measurements.insert(creatMeasurementDocument(measurement));
+                measurements.insert(createMeasurementDocument(measurement));
             });
         } catch (UnknownHostException ex) {
             Logger.getLogger(MongoLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private BasicDBObject creatMeasurementDocument(Measurement measurement) {
+    private BasicDBObject createMeasurementDocument(Measurement measurement) {
         BasicDBObject document = new BasicDBObject("datetime", measurement.getDate().getTime())
                 .append("sensorId", measurement.getSensorId())
                 .append("type", measurement.getPhysicalQuantity())

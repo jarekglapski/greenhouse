@@ -33,21 +33,15 @@ public class DallasSensorDS18B20 implements Sensor {
 
     @Override
     public Number getValue() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(
-                valueFile))) {
-            String tmp = reader.readLine();
-            int index = -1;
-            while (tmp != null) {
-                index = tmp.indexOf(TEMP_VALUE_PREFIX);
+        try (BufferedReader reader = new BufferedReader(new FileReader(valueFile))) {
+            int index;
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                index = line.indexOf(TEMP_VALUE_PREFIX);
                 if (index >= 0) {
-                    break;
+                    return Integer.parseInt(line.substring(index + 2)) / 1000f;
                 }
-                tmp = reader.readLine();
             }
-            if (index < 0) {
-                throw new IOException("Could not read sensor " + getID());
-            }
-            return Integer.parseInt(tmp.substring(index + 2)) / 1000f;
+            throw new IOException("Could not read sensor " + getID());
         }
     }
 

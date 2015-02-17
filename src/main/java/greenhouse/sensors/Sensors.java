@@ -14,10 +14,6 @@ import greenhouse.sensors.impl.DHTTemperature;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- *
- */
 public class Sensors {
 
     private static final String SESNORS_FOLDER_PATH = "/sys/bus/w1/devices";
@@ -36,21 +32,21 @@ public class Sensors {
     }
 
     private static void addDHTSensors(Set<Sensor> sensors) {
-        Properties props = new Properties();
+        Properties properties = new Properties();
         try {
-            props.load(Sensors.class.getResourceAsStream("/dhtsensors.properties"));
+            properties.load(Sensors.class.getResourceAsStream("/dhtsensors.properties"));
         } catch (IOException e) {
             LOG.log(Level.SEVERE, "Could not find sensors properties!", e);
             return;
         }
         for (int i = 0; true; i++) {
-            String typeStr = props.getProperty(String.format("sensor%d.type", i));
-            if (typeStr == null) {
+            String typeString = properties.getProperty(String.format("sensor%d.type", i));
+            if (typeString == null) {
                 break;
             }
-            DHTType type = DHTType.getType(typeStr);
+            DHTType type = DHTType.getType(typeString);
             if (type != null) {
-                String pin = props.getProperty(String.format("sensor%d.pin", i));
+                String pin = properties.getProperty(String.format("sensor%d.pin", i));
                 if (pin == null) {
                     continue;
                 }
@@ -58,7 +54,7 @@ public class Sensors {
                 sensors.add(new DHTTemperature(sensor));
                 sensors.add(new DHTHygrometer(sensor));
             } else {
-                LOG.log(Level.WARNING, "Sensor type {0} not supported.", type);
+                LOG.log(Level.WARNING, "Sensor type {0} not supported.", typeString);
             }
         }
     }
