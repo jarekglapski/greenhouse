@@ -15,7 +15,7 @@ public class DHTTemperature implements Sensor {
 
     @Override
     public String getID() {
-        return "DHT@" + sensor.getID() + "-temp";
+        return String.format("%s-temp", sensor.getID());
     }
 
     @Override

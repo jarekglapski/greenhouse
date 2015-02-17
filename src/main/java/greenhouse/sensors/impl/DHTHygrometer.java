@@ -15,7 +15,7 @@ public class DHTHygrometer implements Sensor {
 
     @Override
     public String getID() {
-        return "DHT@" + sensor.getID() + "-hygro";
+        return String.format("%s-hygro", sensor.getID());
     }
 
     @Override

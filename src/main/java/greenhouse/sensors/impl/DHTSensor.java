@@ -7,9 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Helper class representing a DHT sensor. Uses the Adafruit_DHT driver, which
+ * Helper class representing a DHT sensor. Uses the AdafruitDHT driver, which
  * must be copied to somewhere on the path.
- *
  */
 public class DHTSensor {
 
@@ -21,8 +20,8 @@ public class DHTSensor {
     private final int gpioPin;
     private final DHTType type;
     private long lastCheck;
-    private float temperature;
-    private float humidity;
+    private float temperature = Float.NEGATIVE_INFINITY;
+    private float humidity = Float.NEGATIVE_INFINITY;
 
     public DHTSensor(DHTType type, int gpioPin) {
         this.type = type;
@@ -30,7 +29,7 @@ public class DHTSensor {
     }
 
     public String getID() {
-        return String.valueOf(gpioPin);
+        return String.format("DHT%s@%d", type.getCode(), gpioPin);
     }
 
     public synchronized float getHumidity() {
@@ -43,7 +42,7 @@ public class DHTSensor {
         return temperature;
     }
 
-    private void checkForUpdates() {
+    protected void checkForUpdates() {
         long now = System.currentTimeMillis();
         if (now - lastCheck > MAX_READ_FREQUENCY) {
             String newValues = readValues();
@@ -55,29 +54,29 @@ public class DHTSensor {
         }
     }
 
-    private float parseTemperature(String input) {
-        float value = Float.MIN_VALUE;
+    protected static float parseTemperature(String input) {
+        float value = Float.NEGATIVE_INFINITY;
         try {
-            Float.parseFloat(input.substring(input.indexOf(TEMP_STR)
+            value = Float.parseFloat(input.substring(input.indexOf(TEMP_STR)
                     + TEMP_STR.length(), input.indexOf('*')));
         } catch (NumberFormatException | NullPointerException e) {
-            LOG.log(Level.SEVERE, String.format("Could not parse temperature from input: %s", input, e));
+            LOG.log(Level.SEVERE, String.format("Could not parse temperature from input: [%s]", input), e);
         }
         return value;
     }
 
-    private float parseHumidity(String input) {
-        float value = Float.MIN_VALUE;
+    protected static float parseHumidity(String input) {
+        float value = Float.NEGATIVE_INFINITY;
         try {
-            Float.parseFloat(input.substring(input.indexOf(HUM_STR)
+            value = Float.parseFloat(input.substring(input.indexOf(HUM_STR)
                     + HUM_STR.length(), input.indexOf('%')));
-        } catch (NumberFormatException | NullPointerException e) {
-            LOG.log(Level.SEVERE, String.format("Could not parse humidity from input: %s", input, e));
+        } catch (StringIndexOutOfBoundsException | NumberFormatException | NullPointerException e) {
+            LOG.log(Level.SEVERE, String.format("Could not parse humidity from input: [%s]", input), e);
         }
         return value;
     }
 
-    private String readValues() {
+    protected String readValues() {
         StringBuffer result = new StringBuffer();
         Process adafruitProcess;
         try {
@@ -87,7 +86,7 @@ public class DHTSensor {
             return null;
         }
         try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                adafruitProcess.getInputStream()));) {
+                adafruitProcess.getInputStream()))) {
 
             String line;
             while ((line = in.readLine()) != null) {
