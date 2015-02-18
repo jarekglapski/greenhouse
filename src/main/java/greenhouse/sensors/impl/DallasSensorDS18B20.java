@@ -1,21 +1,23 @@
 package greenhouse.sensors.impl;
 
+import greenhouse.sensors.PhysicalQuantity;
+import greenhouse.sensors.Sensor;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import greenhouse.sensors.PhysicalQuantity;
-import greenhouse.sensors.Sensor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * DS18B20 type temperature sensor.
- *
  */
 public class DallasSensorDS18B20 implements Sensor {
 
+    private static final Logger LOG = Logger.getLogger(DallasSensorDS18B20.class.getName());
+
     private static final String VALUE_FILE_NAME = "w1_slave";
-    private static final String CELC_DEG_STRING = "*C";
     private static final String TEMP_VALUE_PREFIX = "t=";
 
     private final File sensorFile;
@@ -28,21 +30,25 @@ public class DallasSensorDS18B20 implements Sensor {
 
     @Override
     public String getID() {
-        return sensorFile.getName();
+        return String.format("DS18B20@%s", sensorFile.getName());
     }
 
     @Override
-    public Number getValue() throws IOException {
+    public Number getValue() {
+        float value = Float.NEGATIVE_INFINITY;
         try (BufferedReader reader = new BufferedReader(new FileReader(valueFile))) {
             int index;
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 index = line.indexOf(TEMP_VALUE_PREFIX);
                 if (index >= 0) {
-                    return Integer.parseInt(line.substring(index + 2)) / 1000f;
+                    value = Integer.parseInt(line.substring(index + 2)) / 1000f;
+                    break;
                 }
             }
-            throw new IOException("Could not read sensor " + getID());
+        } catch (IOException ioe) {
+            LOG.log(Level.SEVERE, String.format("Could not read sensor [%s]", getID()), ioe);
         }
+        return value;
     }
 
     private static File deriveValueFile(File sensorFile) {
@@ -51,11 +57,7 @@ public class DallasSensorDS18B20 implements Sensor {
 
     @Override
     public String toString() {
-        try {
-            return String.format("Sensor ID: %s, Temperature: %2.3f%s", getID(), getValue(), getUnitString());
-        } catch (IOException e) {
-            return String.format("Sensor ID: %s, Could not read temperature!", getID());
-        }
+        return String.format("Sensor ID: %s, Temperature: %2.3f%s", getID(), getValue().floatValue(), getUnitString());
     }
 
     @Override
@@ -65,6 +67,6 @@ public class DallasSensorDS18B20 implements Sensor {
 
     @Override
     public String getUnitString() {
-        return CELC_DEG_STRING;
+        return PhysicalQuantity.Temperature.getUnit();
     }
 }

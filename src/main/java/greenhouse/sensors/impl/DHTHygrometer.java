@@ -1,7 +1,5 @@
 package greenhouse.sensors.impl;
 
-import java.io.IOException;
-
 import greenhouse.sensors.PhysicalQuantity;
 import greenhouse.sensors.Sensor;
 
@@ -19,7 +17,7 @@ public class DHTHygrometer implements Sensor {
     }
 
     @Override
-    public Number getValue() throws IOException {
+    public Number getValue() {
         return sensor.getHumidity();
     }
 
@@ -30,6 +28,6 @@ public class DHTHygrometer implements Sensor {
 
     @Override
     public String getUnitString() {
-        return "%";
+        return PhysicalQuantity.Humidity.getUnit();
     }
 }

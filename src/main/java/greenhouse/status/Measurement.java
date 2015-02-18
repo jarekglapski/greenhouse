@@ -1,6 +1,8 @@
 package greenhouse.status;
 
 import greenhouse.sensors.PhysicalQuantity;
+import greenhouse.sensors.Sensor;
+
 import java.util.Date;
 
 /**
@@ -11,15 +13,20 @@ public class Measurement {
     private Date date;
     private String sensorId;
     private Number value;
-    private String unit;
     private PhysicalQuantity physicalQuantity;
 
-    Measurement(Date date, String id, Number value, String unitString, PhysicalQuantity physicalQuantity) {
+    public Measurement(Date date, String id, Number value, PhysicalQuantity physicalQuantity) {
         this.date = date;
         this.sensorId = id;
         this.value = value;
-        this.unit = unitString;
-        this. physicalQuantity = physicalQuantity;
+        this.physicalQuantity = physicalQuantity;
+    }
+
+    public Measurement(Date date, Sensor sensor) {
+        this.date = date;
+        this.sensorId = sensor.getID();
+        this.value = sensor.getValue();
+        this.physicalQuantity = sensor.getPhysicalQuantity();
     }
 
     public Date getDate() {
@@ -46,16 +53,12 @@ public class Measurement {
         this.value = value;
     }
 
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
     public PhysicalQuantity getPhysicalQuantity() {
         return physicalQuantity;
+    }
+
+    public String getUnit() {
+        return physicalQuantity.getUnit();
     }
 
     public void setPhysicalQuantity(PhysicalQuantity physicalQuantity) {
@@ -64,6 +67,6 @@ public class Measurement {
     
     @Override
     public String toString() {
-        return String.format("%s(%s) | %3.2f%s", getPhysicalQuantity(), getSensorId(), getValue(), getUnit());
+        return String.format("%1$s(%2$s) | %3$tF %3$tT | %4$3.2f%5$s", getPhysicalQuantity(), getSensorId(), getDate(), getValue().floatValue(), getUnit());
     }
 }

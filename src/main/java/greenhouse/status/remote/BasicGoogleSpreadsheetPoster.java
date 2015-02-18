@@ -2,19 +2,19 @@ package greenhouse.status.remote;
 
 import greenhouse.status.Measurement;
 import greenhouse.status.Reader;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Set;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.HttpsURLConnection;
-import org.json.JSONObject;
-import org.json.JSONStringer;
 
 /**
  *
@@ -56,7 +56,7 @@ public class BasicGoogleSpreadsheetPoster extends TimerTask {
         return responseCode;
     }
 
-    private int sendGetRequest(Set<Measurement> measurements) throws ProtocolException, IOException {
+    private int sendGetRequest(Set<Measurement> measurements) throws IOException {
         int responseCode = 0;
         for (Measurement measurement : measurements) {
             responseCode = sendGetRequest(measurement);
@@ -67,7 +67,7 @@ public class BasicGoogleSpreadsheetPoster extends TimerTask {
         return responseCode;
     }
 
-    private int sendGetRequest(Measurement measurement) throws ProtocolException, IOException {
+    private int sendGetRequest(Measurement measurement) throws IOException {
         String paramData = getData(measurement);
         URL endpoint = new URL(url + "?" + paramData);
         HttpsURLConnection connection = (HttpsURLConnection) endpoint.openConnection();

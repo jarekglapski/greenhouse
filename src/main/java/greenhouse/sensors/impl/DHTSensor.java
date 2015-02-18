@@ -82,7 +82,7 @@ public class DHTSensor {
         try {
             adafruitProcess = Runtime.getRuntime().exec(String.format(ADAFRUIT_PROCESS_TEMPLATE, type.getCode(), gpioPin));
         } catch (IOException ioe) {
-            LOG.log(Level.SEVERE, String.format("Could not execute process: %s", String.format(ADAFRUIT_PROCESS_TEMPLATE, type.getCode(), gpioPin)), ioe);
+            LOG.log(Level.SEVERE, String.format("Could not execute process: [%s]", String.format(ADAFRUIT_PROCESS_TEMPLATE, type.getCode(), gpioPin)), ioe);
             return null;
         }
         try (BufferedReader in = new BufferedReader(new InputStreamReader(

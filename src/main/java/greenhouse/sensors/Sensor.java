@@ -1,7 +1,5 @@
 package greenhouse.sensors;
 
-import java.io.IOException;
-
 /**
  * A simple interface for a sensor.
  *
@@ -20,9 +18,8 @@ public interface Sensor {
      * The value of the sensor.
      *
      * @return the value of the sensor.
-     * @throws IOException if there was a problem accessing the sensor.
      */
-    Number getValue() throws IOException;
+    Number getValue();
 
     /**
      * @return the kind of physical quantity the value represents, for example
